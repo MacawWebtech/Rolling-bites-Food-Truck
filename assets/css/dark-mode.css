@@ -1,0 +1,65 @@
+/* ==========================================================================
+   ROLLING BITES — Dark Mode Overrides
+   Activated by [data-theme="dark"] on <html>. Toggle stored in localStorage
+   and synced with prefers-color-scheme on first visit (see main.js).
+   ========================================================================== */
+
+[data-theme="dark"]{
+  --bg:#121212;
+  --bg-alt:#181818;
+  --surface:#1C1C1C;
+  --text:#F3EDE6;
+  --text-soft:#B6ADA4;
+  --border:rgba(255,255,255,0.10);
+  --cream:#121212;
+  --paper:#181818;
+  --dark:#0B0B0B;
+  --dark-soft:#161616;
+}
+
+[data-theme="dark"] body{background:var(--bg);color:var(--text);}
+[data-theme="dark"] h1,[data-theme="dark"] h2,[data-theme="dark"] h3,[data-theme="dark"] h4{color:#fff;}
+
+[data-theme="dark"] .site-header:not(.is-scrolled){background:linear-gradient(180deg, rgba(0,0,0,.55), transparent);}
+[data-theme="dark"] .header-light{background:rgba(18,18,18,.9) !important;}
+[data-theme="dark"] .header-light .main-nav .nav-link,
+[data-theme="dark"] .header-light .icon-btn{color:#fff;}
+
+[data-theme="dark"] .dish-card,
+[data-theme="dark"] .feature-card,
+[data-theme="dark"] .review-card,
+[data-theme="dark"] .blog-card,
+[data-theme="dark"] .sidebar-widget,
+[data-theme="dark"] .pricing-card,
+[data-theme="dark"] .service-card-body,
+[data-theme="dark"] .author-box{
+  background:var(--surface);
+  box-shadow:0 10px 30px rgba(0,0,0,.5);
+  border-color:rgba(255,255,255,.08);
+}
+
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select{background:#222;color:#fff;border-color:rgba(255,255,255,.15);}
+[data-theme="dark"] .form-control::placeholder{color:#877e75;}
+
+[data-theme="dark"] .map-placeholder{background:#1a1a1a;border-color:rgba(255,255,255,.15);color:var(--text-soft);}
+[data-theme="dark"] .filter-btn{border-color:rgba(255,255,255,.18);color:#fff;}
+[data-theme="dark"] .tag-cloud a{border-color:rgba(255,255,255,.15);color:#fff;}
+[data-theme="dark"] .breadcrumb-pill{color:rgba(255,255,255,.6);}
+
+[data-theme="dark"] .site-footer{background:#0a0a0a;}
+[data-theme="dark"] .offcanvas-menu{background:#0f0f0f;}
+
+[data-theme="dark"] .theme-toggle .bi-moon-stars-fill{display:none;}
+[data-theme="dark"] .theme-toggle .bi-sun-fill{display:inline-block;}
+.theme-toggle .bi-sun-fill{display:none;}
+
+[data-theme="dark"] .reveal-img::after{background:#121212;}
+[data-theme="dark"] .pull-quote{color:#fff;}
+
+/* Buttons & labels that were dark-on-dark */
+[data-theme="dark"] .btn-outline-dark2{border-color:rgba(255,255,255,.55);color:#fff;background:transparent;}
+[data-theme="dark"] .btn-outline-dark2:hover{background:#fff;border-color:#fff;color:#0B0B0B;}
+[data-theme="dark"] .btn-dark{background:#fff;border-color:#fff;color:#0B0B0B;}
+[data-theme="dark"] .btn-dark:hover{background:var(--primary);border-color:var(--primary);color:#fff;}
+[data-theme="dark"] .schedule-day.text-dark{color:var(--accent) !important;}
