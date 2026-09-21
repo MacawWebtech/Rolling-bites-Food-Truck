@@ -1,0 +1,27 @@
+/* ==========================================================================
+   ROLLING BITES — sparkle-trail.css
+   Styles for the cursor sparkle-dust canvas (see assets/js/sparkle-trail.js).
+   - Fixed, full-viewport, never intercepts clicks or hovers.
+   - z-index 1: sits above the page background and normal flowing content,
+     below the header, hero content, dropdowns, off-canvas menu, progress bar
+     and the existing cursor follower.
+   - Hidden entirely on touch / coarse-pointer devices and for users who
+     prefer reduced motion.
+   ========================================================================== */
+.rb-sparkle-canvas{
+  position:fixed;
+  top:0;left:0;
+  width:100%;height:100%;
+  display:block;
+  pointer-events:none;
+  user-select:none;
+  -webkit-user-select:none;
+  z-index:1;
+}
+
+@media (hover:none),(pointer:coarse){
+  .rb-sparkle-canvas{display:none !important;}
+}
+@media (prefers-reduced-motion:reduce){
+  .rb-sparkle-canvas{display:none !important;}
+}
