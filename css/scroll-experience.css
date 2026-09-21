@@ -1,0 +1,164 @@
+/* ==========================================================================
+   ROLLING BITES — scroll-experience.css
+   Companion to assets/js/scroll-experience.js.
+
+   Design rule: this file never changes the look of the site. It only
+   (a) removes the old CSS-transition reveals once the new engine is running,
+   (b) provides the masks / layers the engine animates, and
+   (c) styles the small UI additions (progress bar, nav indicator, cursor).
+
+   Everything that is "engine on" is scoped under  html.rb-motion  so if the
+   JavaScript (or a CDN) fails, the original CSS + main.js behaviour remains.
+   ========================================================================== */
+
+/* ---------- 0. Smooth-scroll base (from Lenis) --------------------------- */
+html.lenis,html.lenis body{height:auto;}
+.lenis.lenis-smooth{scroll-behavior:auto !important;}
+.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain;}
+.lenis.lenis-stopped{overflow:hidden;}
+.lenis.lenis-scrolling iframe{pointer-events:none;}
+/* CSS smooth-scroll fights with JS-driven scrolling; JS handles anchors instead */
+html.rb-motion{scroll-behavior:auto;}
+
+/* ---------- 1. Load gate ------------------------------------------------- */
+/* Hides the intro targets for the split second before the engine takes over.
+   Removed by .rb-go (engine running) or .rb-off (engine unavailable / 3.5 s timeout). */
+html.rb-js:not(.rb-go):not(.rb-off) .hero-content,
+html.rb-js:not(.rb-go):not(.rb-off) .page-banner .breadcrumb-row,
+html.rb-js:not(.rb-go):not(.rb-off) .error-page .container-xl,
+html.rb-js:not(.rb-go):not(.rb-off) .coming-soon .container-xl,
+html.rb-js:not(.rb-go):not(.rb-off) .site-header{opacity:0;}
+
+/* ---------- 2. Neutralise the old CSS reveals when the engine is active --- */
+/* Anything the engine does not explicitly animate simply stays visible. */
+.rb-motion .reveal,
+.rb-motion .reveal-left,
+.rb-motion .reveal-right,
+.rb-motion .reveal-zoom,
+.rb-motion .reveal-img{opacity:1;transform:none;transition:none;}
+.rb-motion .reveal-img img{transform:none;transition:none;}
+.rb-motion .reveal-img::after{display:none;}
+.rb-motion .stagger > *{transition-delay:0s;}
+
+/* Parallax-section content must sit above the overlay (the old CSS targeted
+   .container, but the markup uses .container-xl) */
+.parallax-section .container-xl{position:relative;z-index:1;}
+
+/* ---------- 3. Text masks (word-by-word headings) ------------------------ */
+.rb-w{display:inline-block;overflow:hidden;vertical-align:top;padding:.12em .05em .14em;margin:-.12em -.05em -.14em;}
+.rb-wi{display:inline-block;will-change:transform;}
+.rb-line{display:block;}
+/* editorial quotes only fade word by word: no mask, so italic overhangs are never clipped */
+.font-editorial .rb-w{overflow:visible;}
+.rb-motion .eyebrow::before{transform-origin:0 50%;transform:scaleX(var(--rb-line,1));}
+[dir="rtl"].rb-motion .eyebrow::before{transform-origin:100% 50%;}
+.rb-motion .truck-emoji{display:inline-block;}
+
+/* ---------- 4. Image frames & layers ------------------------------------- */
+.rb-frame{display:block;width:100%;height:100%;overflow:hidden;position:relative;}
+.rb-frame > img{display:block;width:100%;height:100%;object-fit:cover;max-width:none;transform-origin:50% 50%;}
+
+/* Hero / banner background layers: intro zoom uses the individual `scale`
+   property (var-driven) so it composes with the scroll transform. */
+.rb-motion .hero-layer,
+.rb-motion .banner-bg{scale:var(--rb-s,1);}
+.rb-motion .banner-bg{background-attachment:scroll;will-change:transform;}
+.rb-motion .hero-layer{will-change:transform;}
+
+/* Card / gallery images: hover zoom stays on `transform` (existing CSS);
+   entrance settle + horizontal pan use `scale` / `translate` so they never fight it. */
+.rb-motion .dish-img img,
+.rb-motion .blog-img img,
+.rb-motion .team-photo img,
+.rb-motion .service-card img,
+.rb-motion .gallery-item img{scale:var(--rb-s,1);translate:var(--rb-x,0%) 0;}
+.rb-motion .gallery-item:hover img{transform:scale(1.06);}
+
+/* Parallax section background (created by JS from the section's own image) */
+.rb-has-layer{overflow:hidden;background-image:none !important;background-attachment:scroll;}
+.rb-bglayer{position:absolute;inset:-14% 0;background-size:cover;background-position:center;z-index:0;will-change:transform;}
+.rb-lite .rb-bglayer{inset:0;}
+
+/* ---------- 5. Pinned (sticky) scenes ------------------------------------ */
+.rb-pin-track{display:contents;}
+.rb-pin-on .rb-pin-track{display:block;position:relative;height:var(--rb-pin-len,260vh);}
+.rb-pin-on .rb-pin-track > [data-rb-pin]{position:sticky;top:0;height:100vh;min-height:100vh;display:flex;align-items:center;overflow:hidden;}
+.rb-pin-on .rb-pin-track > [data-rb-pin] > .container-xl{width:100%;}
+/* keep the gallery scene inside one viewport on shorter laptop screens */
+.rb-pin-on [data-rb-pin="gallery"]{padding-block:clamp(72px,11vh,120px);}
+.rb-pin-on [data-rb-pin="gallery"] .gallery-tall{height:clamp(200px,40vh,340px);}
+.rb-pin-on [data-rb-pin="gallery"] .row.mb-5{margin-bottom:clamp(1rem,3vh,3rem) !important;}
+
+/* ---------- 6. Header: scroll-linked transparent → solid ------------------ */
+.rb-ui .site-header{background:transparent !important;box-shadow:none !important;-webkit-backdrop-filter:none !important;backdrop-filter:none !important;
+  transition:padding .5s var(--ease);}
+.rb-ui .site-header::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:rgba(20,20,20,.94);box-shadow:0 10px 30px rgba(0,0,0,.25);opacity:var(--rb-hdr,0);}
+.rb-ui:not(.rb-lite) .site-header::before{-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);}
+.rb-ui .site-header .brand-logo{transition:height .5s var(--ease);}
+
+/* ---------- 7. Navigation: gliding underline + smooth active state ------- */
+.site-nav .nav-link{transition:color .35s var(--ease);}
+/* CSS-only fallback underline: wipes in from the start, exits toward the end */
+.site-nav .nav-link::before{width:100%;transform:scaleX(0);transform-origin:100% 50%;transition:transform .55s var(--ease);}
+.site-nav .nav-link:hover::before,.site-nav .nav-link.active::before{width:100%;transform:scaleX(1);transform-origin:0 50%;}
+[dir="rtl"] .site-nav .nav-link::before{transform-origin:0 50%;}
+[dir="rtl"] .site-nav .nav-link:hover::before,[dir="rtl"] .site-nav .nav-link.active::before{transform-origin:100% 50%;}
+/* JS indicator: one underline that glides between links */
+.rb-nav-ind .site-nav-list{position:relative;}
+.rb-nav-ind .site-nav .nav-link::before{display:none;}
+.nav-indicator{position:absolute;left:0;bottom:0;height:2px;width:100%;margin:0;padding:0;list-style:none;pointer-events:none;
+  background:var(--accent);transform-origin:0 50%;transform:translateX(var(--x,0px)) scaleX(var(--w,0));
+  transition:transform .65s var(--ease);}
+
+/* ---------- 8. Scroll progress + back-to-top ------------------------------ */
+.rb-progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:1100;pointer-events:none;}
+.rb-progress span{display:block;height:100%;transform-origin:0 50%;transform:scaleX(0);
+  background:linear-gradient(90deg,var(--primary),var(--accent));will-change:transform;}
+[dir="rtl"] .rb-progress span{transform-origin:100% 50%;}
+
+.rb-ui .back-to-top{overflow:visible;transform:translateY(28px) scale(.55);
+  transition:opacity .5s var(--ease),transform .8s var(--ease),visibility 0s linear .8s,background .3s,box-shadow .3s;}
+.rb-ui .back-to-top.show{transform:translateY(0) scale(1);transition-delay:0s;}
+.rb-ui .back-to-top:hover{background:var(--primary-dark);}
+.rb-ui .back-to-top i{transition:transform .5s var(--ease);}
+.rb-ui .back-to-top:hover i{transform:translateY(-3px);}
+.rb-ring{position:absolute;inset:-5px;width:calc(100% + 10px);height:calc(100% + 10px);transform:rotate(-90deg);pointer-events:none;}
+.rb-ring circle{fill:none;stroke-width:2;}
+.rb-ring-track{stroke:rgba(var(--primary-rgb),.16);}
+.rb-ring-bar{stroke:var(--primary);stroke-linecap:round;stroke-dasharray:131.95;stroke-dashoffset:131.95;}
+
+/* ---------- 9. Buttons & cards under the desktop pointer engine ----------- */
+/* JS drives transform (magnetic / tilt) so the CSS transform transitions step aside */
+.rb-fine .btn{transition:box-shadow .35s var(--ease),background .3s,color .3s,border-color .3s;}
+.rb-fine .btn:hover,.rb-fine .btn:active{transform:none;}
+.rb-fine .dish-card,.rb-fine .blog-card{transition:box-shadow .5s var(--ease);}
+.rb-fine .feature-card{transition:box-shadow .4s var(--ease),border-color .4s var(--ease);}
+.rb-fine .dish-card:hover,.rb-fine .blog-card:hover,.rb-fine .feature-card:hover{transform:none;}
+.rb-fine .feature-card:hover{box-shadow:var(--shadow-md);}
+.rb-fine .blog-card:hover{box-shadow:var(--shadow-md);}
+.rb-fine .social-circle{will-change:transform;}
+
+/* ---------- 10. Cursor follower (desktop pointers only) ------------------- */
+.rb-cursor{position:fixed;left:0;top:0;width:0;height:0;pointer-events:none;z-index:1200;opacity:0;transition:opacity .35s;}
+.rb-cursor.on{opacity:1;}
+.rb-cursor-dot,.rb-cursor-ring{position:absolute;left:0;top:0;}
+.rb-cursor-dot{width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:var(--primary);}
+.rb-cursor-ring{width:38px;height:38px;margin:-19px 0 0 -19px;}
+.rb-cursor-ring i{display:block;width:100%;height:100%;border-radius:50%;border:1.5px solid rgba(var(--primary-rgb),.7);
+  transition:transform .5s var(--ease),background .35s,border-color .35s;}
+.rb-cursor.is-hover .rb-cursor-ring i{transform:scale(1.75);background:rgba(var(--primary-rgb),.1);border-color:rgba(var(--primary-rgb),.45);}
+.rb-cursor.is-down .rb-cursor-ring i{transform:scale(.8);}
+@media (hover:none),(pointer:coarse),(max-width:991.98px){.rb-cursor{display:none !important;}}
+
+/* ---------- 11. Small screens / low power / reduced motion --------------- */
+@media (max-width:767.98px){
+  .rb-progress{height:2px;}
+}
+@media (prefers-reduced-motion:reduce){
+  /* content is simply there: no stagger delays, offsets or masks */
+  .reveal,.reveal-left,.reveal-right,.reveal-zoom,.reveal-img{opacity:1 !important;transform:none !important;transition-delay:0s !important;}
+  .reveal-img img{transform:none !important;}
+  .rb-cursor{display:none !important;}
+  .nav-indicator,.rb-ui .back-to-top,.rb-ui .back-to-top i{transition:none;}
+}
